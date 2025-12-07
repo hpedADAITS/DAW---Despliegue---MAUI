@@ -9,7 +9,6 @@ MauiApp1/MauiApp1/obj/
 *.user
 *.userprefs
 *.suo
-
 # Mobile packages/keys
 *.keystore
 *.p12
