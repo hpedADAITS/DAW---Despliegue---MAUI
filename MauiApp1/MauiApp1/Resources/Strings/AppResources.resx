@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AboutLabel" xml:space="preserve">
+    <value>Acerca de</value>
+  </data>
+  <data name="AddFilesMessage" xml:space="preserve">
+    <value>Aquí se abriría el selector de archivos para elegir audio del dispositivo.</value>
+  </data>
+  <data name="AddFilesTitle" xml:space="preserve">
+    <value>Añadir archivos</value>
+  </data>
+  <data name="ApiStatusBackend" xml:space="preserve">
+    <value>Backend: servidor Express (local) usando radio-browser.info para emisoras.</value>
+  </data>
+  <data name="ApiStatusTitle" xml:space="preserve">
+    <value>Estado de la API</value>
+  </data>
+  <data name="ApiStatusChecking" xml:space="preserve">
+    <value>Comprobando estado de la API...</value>
+  </data>
+  <data name="ApiStatusDirectory" xml:space="preserve">
+    <value>Directorio de radios: https://www.radio-browser.info/</value>
+  </data>
+  <data name="ApiStatusError" xml:space="preserve">
+    <value>Comprobación fallida: {0}</value>
+  </data>
+  <data name="ApiStatusFail" xml:space="preserve">
+    <value>API no disponible ({0}) en {1}</value>
+  </data>
+  <data name="ApiStatusOk" xml:space="preserve">
+    <value>API disponible ({0}) - Host: {1} - Directorio de radios: https://www.radio-browser.info/ - Respuesta: {2}</value>
+  </data>
+  <data name="ApiStatusUnknown" xml:space="preserve">
+    <value>Estado sin comprobar.</value>
+  </data>
+  <data name="ApiUnavailableMessage" xml:space="preserve">
+    <value>No se pudo conectar al servidor API después de 8 reintentos.&#x0a;&#x0a;El script build-and-run.ps1 debería iniciarlo automáticamente.&#x0a;&#x0a;Si la app inicia vacía, espera 30 segundos y reinicia la app.</value>
+  </data>
+  <data name="ApiUnavailableTitle" xml:space="preserve">
+    <value>API no disponible</value>
+  </data>
+  <data name="AppDescription" xml:space="preserve">
+    <value>Aplicación de audio multiplataforma MAUI</value>
+  </data>
+  <data name="AppNameVersion" xml:space="preserve">
+    <value>Reproductor de Audio v1.0</value>
+  </data>
+  <data name="AppTitle" xml:space="preserve">
+    <value>MauiPlayer</value>
+  </data>
+  <data name="ArrangeSubtitle" xml:space="preserve">
+    <value>Toca etiquetas para filtrar la lista por género o bitrate mínimo.</value>
+  </data>
+  <data name="ArrangeTitle" xml:space="preserve">
+    <value>Organizar</value>
+  </data>
+  <data name="CheckApiStatusButton" xml:space="preserve">
+    <value>Comprobar estado API</value>
+  </data>
+  <data name="CreditsDesign" xml:space="preserve">
+    <value>Diseño: Hernan para despliegue</value>
+  </data>
+  <data name="CreditsDirectory" xml:space="preserve">
+    <value>Directorio de streaming: radio-browser.info</value>
+  </data>
+  <data name="CreditsIcons" xml:space="preserve">
+    <value>Iconos: Fluent UI System Icons (MIT)</value>
+  </data>
+  <data name="CreditsLabel" xml:space="preserve">
+    <value>Créditos</value>
+  </data>
+  <data name="DarkOption" xml:space="preserve">
+    <value>Oscuro</value>
+  </data>
+  <data name="GenreLabel" xml:space="preserve">
+    <value>Género</value>
+  </data>
+  <data name="HomeTitle" xml:space="preserve">
+    <value>Inicio</value>
+  </data>
+  <data name="LanguageEnglish" xml:space="preserve">
+    <value>Inglés</value>
+  </data>
+  <data name="LanguageLabel" xml:space="preserve">
+    <value>Idioma</value>
+  </data>
+  <data name="LanguagePickerTitle" xml:space="preserve">
+    <value>Selecciona idioma...</value>
+  </data>
+  <data name="LanguageSpanish" xml:space="preserve">
+    <value>Español</value>
+  </data>
+  <data name="LightOption" xml:space="preserve">
+    <value>Claro</value>
+  </data>
+  <data name="MinBitrateLabel" xml:space="preserve">
+    <value>Bitrate mínimo</value>
+  </data>
+  <data name="MissingCoverTitle" xml:space="preserve">
+    <value>Emisoras sin carátula</value>
+  </data>
+  <data name="MissingCoverToggle" xml:space="preserve">
+    <value>Emisoras sin carátula ({0})</value>
+  </data>
+  <data name="NoSongPlaying" xml:space="preserve">
+    <value>Sin reproducción</value>
+  </data>
+  <data name="OkButton" xml:space="preserve">
+    <value>Aceptar</value>
+  </data>
+  <data name="OnlineRadioLabel" xml:space="preserve">
+    <value>Radio en línea</value>
+  </data>
+  <data name="PlaybackErrorMessage" xml:space="preserve">
+    <value>No se pudo reproducir: {0}</value>
+  </data>
+  <data name="PlaybackErrorTitle" xml:space="preserve">
+    <value>Error de reproducción</value>
+  </data>
+  <data name="PlaylistHeader" xml:space="preserve">
+    <value>Lista de reproducción</value>
+  </data>
+  <data name="RadioDirectoryLabel" xml:space="preserve">
+    <value>Directorio de radios</value>
+  </data>
+  <data name="RadioGenreFallback" xml:space="preserve">
+    <value>Variado</value>
+  </data>
+  <data name="SettingsTabText" xml:space="preserve">
+    <value>⚙ Preferencias</value>
+  </data>
+  <data name="ShellTabArrange" xml:space="preserve">
+    <value>+ Organizar</value>
+  </data>
+  <data name="ShellTabNow" xml:space="preserve">
+    <value>♪ Ahora</value>
+  </data>
+  <data name="ShellTabPlaylist" xml:space="preserve">
+    <value>♫ Lista</value>
+  </data>
+  <data name="SortOptionBitrate" xml:space="preserve">
+    <value>Bitrate (de mayor a menor)</value>
+  </data>
+  <data name="SortOptionCountry" xml:space="preserve">
+    <value>País (A-Z)</value>
+  </data>
+  <data name="SortOptionDefault" xml:space="preserve">
+    <value>Predeterminado</value>
+  </data>
+  <data name="SortOptionGenre" xml:space="preserve">
+    <value>Género (A-Z)</value>
+  </data>
+  <data name="SortOptionTitle" xml:space="preserve">
+    <value>Título (A-Z)</value>
+  </data>
+  <data name="SortOrderLabel" xml:space="preserve">
+    <value>Orden</value>
+  </data>
+  <data name="SortPlaylistSubtitle" xml:space="preserve">
+    <value>Elige cómo se ordenan canciones y emisoras</value>
+  </data>
+  <data name="SortPlaylistTitle" xml:space="preserve">
+    <value>Ordenar lista</value>
+  </data>
+  <data name="StationWithoutCoverListTitle" xml:space="preserve">
+    <value>Emisoras sin carátula</value>
+  </data>
+  <data name="StatusNotChecked" xml:space="preserve">
+    <value>Estado sin comprobar.</value>
+  </data>
+  <data name="StopMessageTitle" xml:space="preserve">
+    <value>Sin reproducción</value>
+  </data>
+  <data name="ThemeLabel" xml:space="preserve">
+    <value>Tema</value>
+  </data>
+  <data name="ThemePickerTitle" xml:space="preserve">
+    <value>Selecciona tema...</value>
+  </data>
+  <data name="UnknownArtist" xml:space="preserve">
+    <value>Artista desconocido</value>
+  </data>
+  <data name="UnknownTitle" xml:space="preserve">
+    <value>Desconocido</value>
+  </data>
+  <data name="UnknownGenre" xml:space="preserve">
+    <value>Género desconocido</value>
+  </data>
+  <data name="VolumeLabel" xml:space="preserve">
+    <value>Volumen</value>
+  </data>
+</root>

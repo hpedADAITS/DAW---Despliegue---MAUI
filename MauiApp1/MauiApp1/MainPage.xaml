@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:MauiApp1.Views"
+             xmlns:resx="clr-namespace:MauiApp1.Resources.Strings"
+             x:Class="MauiApp1.MainPage"
+             BackgroundColor="{DynamicResource PageBackground}">
+
+    <ContentPage.Resources>
+        <Style x:Key="TabButtonStyle" TargetType="Button">
+            <Setter Property="CornerRadius" Value="20" />
+            <Setter Property="FontAttributes" Value="Bold" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="BorderWidth" Value="0" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="HeightRequest" Value="54" />
+        </Style>
+    </ContentPage.Resources>
+
+    <Grid RowDefinitions="*,110">
+        <ScrollView Grid.Row="0"
+                    VerticalOptions="FillAndExpand"
+                    BackgroundColor="{DynamicResource PageBackground}">
+            <VerticalStackLayout Padding="20,30,20,130" Spacing="28">
+                
+                <local:NowPlayingView x:Name="NowPlayingViewContent" IsVisible="True" />
+                <local:PlaylistView x:Name="PlaylistViewContent" IsVisible="False" />
+                <local:PlaylistSettingsView x:Name="PlaylistSettingsViewContent" IsVisible="False" />
+                <local:SettingsView x:Name="SettingsViewContent" IsVisible="False" />
+            </VerticalStackLayout>
+        </ScrollView>
+
+        
+        <Border Grid.Row="1"
+                BackgroundColor="#FFFFFF"
+                StrokeShape="RoundRectangle 30,30,0,0"
+                Stroke="{DynamicResource OnSurfaceVariant}"
+                StrokeThickness="1"
+                Padding="12,16">
+            <Border.Shadow>
+                <Shadow Brush="#1A000000" Offset="0,-4" Radius="18" />
+            </Border.Shadow>
+            <Grid ColumnDefinitions="*,*,*,*" ColumnSpacing="8">
+                <Button x:Name="NowPlayingTab"
+                        Text="{x:Static resx:AppResources.ShellTabNow}"
+                        Style="{StaticResource TabButtonStyle}"
+                        BackgroundColor="#6750A4"
+                        TextColor="White"
+                        Clicked="OnNowPlayingClicked" />
+                <Button x:Name="PlaylistTab"
+                        Text="{x:Static resx:AppResources.ShellTabPlaylist}"
+                        Style="{StaticResource TabButtonStyle}"
+                        BackgroundColor="{DynamicResource SurfaceVariant}"
+                        TextColor="{DynamicResource OnSurface}"
+                        Clicked="OnPlaylistClicked"
+                        Grid.Column="1" />
+                <Button x:Name="PlaylistSettingsTab"
+                        Text="{x:Static resx:AppResources.ShellTabArrange}"
+                        Style="{StaticResource TabButtonStyle}"
+                        BackgroundColor="{DynamicResource SurfaceVariant}"
+                        TextColor="{DynamicResource OnSurface}"
+                        Clicked="OnPlaylistSettingsClicked"
+                        Grid.Column="2" />
+                <Button x:Name="SettingsTab"
+                        Text="{x:Static resx:AppResources.SettingsTabText}"
+                        Style="{StaticResource TabButtonStyle}"
+                        BackgroundColor="{DynamicResource SurfaceVariant}"
+                        TextColor="{DynamicResource OnSurface}"
+                        Clicked="OnSettingsClicked"
+                        Grid.Column="3" />
+            </Grid>
+        </Border>
+    </Grid>
+
+</ContentPage>

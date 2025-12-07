@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<StackLayout xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:resx="clr-namespace:MauiApp1.Resources.Strings"
+             x:Class="MauiApp1.Views.NowPlayingView"
+             Spacing="16"
+             Padding="0">
+
+    
+    <Border StrokeShape="RoundRectangle 20"
+            StrokeThickness="0"
+            BackgroundColor="{DynamicResource Surface}"
+            Padding="12">
+        <Grid RowDefinitions="240,Auto,Auto,Auto,Auto" RowSpacing="12">
+            <Image x:Name="AlbumCover"
+                   Grid.Row="0"
+                   Aspect="AspectFill"
+                   HeightRequest="200"
+                   BackgroundColor="{DynamicResource SurfaceVariant}" />
+
+            <Label x:Name="CurrentSongTitle"
+                   Grid.Row="1"
+                   Text="{x:Static resx:AppResources.NoSongPlaying}"
+                   Style="{DynamicResource HeadlineStyle}"
+                   FontSize="20"
+                   FontAttributes="Bold"
+                   TextColor="{DynamicResource PrimaryText}"
+                   LineBreakMode="TailTruncation" />
+
+            <Label x:Name="CurrentSongArtist"
+                   Grid.Row="2"
+                   Text="{x:Static resx:AppResources.UnknownArtist}"
+                   FontSize="14"
+                   TextColor="{DynamicResource SecondaryText}" />
+
+            <HorizontalStackLayout Grid.Row="3" Spacing="8">
+                <Border StrokeShape="RoundRectangle 8" 
+                        StrokeThickness="0" 
+                        BackgroundColor="{DynamicResource SurfaceVariant}"
+                        Padding="8,4">
+                    <Label x:Name="CurrentSongGenre"
+                           Text="{x:Static resx:AppResources.UnknownGenre}"
+                           FontSize="12"
+                           TextColor="{DynamicResource TertiaryText}" />
+                </Border>
+                <Border StrokeShape="RoundRectangle 8" 
+                        StrokeThickness="0" 
+                        BackgroundColor="{DynamicResource SurfaceVariant}"
+                        Padding="8,4">
+                    <Label x:Name="CurrentSongBitrate"
+                           Text="128 kbps"
+                           FontSize="12"
+                           TextColor="{DynamicResource TertiaryText}" />
+                </Border>
+            </HorizontalStackLayout>
+
+            
+            <Grid Grid.Row="4" RowDefinitions="Auto,Auto" RowSpacing="8">
+                <Slider x:Name="ProgressSlider"
+                        Grid.Row="0"
+                        Minimum="0"
+                        Maximum="100"
+                        Value="0"
+                        ThumbColor="#6750A4"
+                        MinimumTrackColor="#6750A4"
+                        MaximumTrackColor="{DynamicResource SliderMaxColor}" />
+                <Grid Grid.Row="1" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">
+                    <Label x:Name="TimeElapsed"
+                           Grid.Column="0"
+                           Text="0:00"
+                           FontSize="12"
+                           TextColor="{DynamicResource SecondaryText}" />
+                    <Label Grid.Column="2"
+                           x:Name="TimeDuration"
+                           Text="0:00"
+                           FontSize="12"
+                           TextColor="{DynamicResource SecondaryText}" />
+                </Grid>
+            </Grid>
+        </Grid>
+    </Border>
+
+    
+    <Border StrokeShape="RoundRectangle 20"
+            StrokeThickness="0"
+            BackgroundColor="{DynamicResource Surface}"
+            Padding="16">
+        <Grid ColumnDefinitions="*,*,*,*" ColumnSpacing="8">
+            <Button x:Name="PreviousBtn"
+                    Grid.Column="0"
+                    Text="«"
+                    FontSize="32"
+                    Style="{StaticResource RoundIconButtonStyle}"
+                    BackgroundColor="#E8DEF8"
+                    TextColor="#6750A4"
+                    Clicked="OnPreviousClicked" />
+            <Button x:Name="PlayPauseBtn"
+                    Grid.Column="1"
+                    Text="►"
+                    FontSize="28"
+                    Style="{StaticResource RoundIconButtonStyle}"
+                    BackgroundColor="#6750A4"
+                    TextColor="White"
+                    Clicked="OnPlayPauseClicked" />
+            <Button x:Name="StopBtn"
+                    Grid.Column="2"
+                    Text="■"
+                    FontSize="24"
+                    Style="{StaticResource RoundIconButtonStyle}"
+                    BackgroundColor="#E8DEF8"
+                    TextColor="#6750A4"
+                    Opacity="0.6"
+                    IsEnabled="False"
+                    Clicked="OnStopClicked" />
+            <Button x:Name="NextBtn"
+                    Grid.Column="3"
+                    Text="»"
+                    FontSize="32"
+                    Style="{StaticResource RoundIconButtonStyle}"
+                    BackgroundColor="#E8DEF8"
+                    TextColor="#6750A4"
+                    Clicked="OnNextClicked" />
+        </Grid>
+    </Border>
+
+    
+    <Border StrokeShape="RoundRectangle 20"
+            StrokeThickness="0"
+            BackgroundColor="{DynamicResource Surface}"
+            Padding="16">
+        <Grid RowDefinitions="Auto,Auto" RowSpacing="8">
+            <Label Grid.Row="0"
+                   Text="{x:Static resx:AppResources.VolumeLabel}"
+                   FontSize="14"
+                   FontAttributes="Bold"
+                   TextColor="{DynamicResource PrimaryText}" />
+            <Grid Grid.Row="1" ColumnDefinitions="*,60" ColumnSpacing="8">
+                <Slider Grid.Column="0"
+                        x:Name="VolumeSlider"
+                        Minimum="0"
+                        Maximum="100"
+                        Value="50"
+                        ThumbColor="#6750A4"
+                        MinimumTrackColor="#6750A4"
+                        MaximumTrackColor="{DynamicResource SliderMaxColor}" />
+                <Label Grid.Column="1"
+                       x:Name="VolumeValueLabel"
+                       Text="50%"
+                       FontSize="14"
+                       TextColor="{DynamicResource SecondaryText}"
+                       HorizontalTextAlignment="End" />
+            </Grid>
+        </Grid>
+    </Border>
+
+</StackLayout>

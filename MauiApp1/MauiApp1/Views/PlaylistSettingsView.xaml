@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<StackLayout xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:resx="clr-namespace:MauiApp1.Resources.Strings"
+             x:Class="MauiApp1.Views.PlaylistSettingsView"
+             Spacing="16"
+             Padding="0">
+
+    
+    <Border StrokeShape="RoundRectangle 20"
+            StrokeThickness="1"
+            Stroke="{DynamicResource BorderColor}"
+            BackgroundColor="{DynamicResource Surface}"
+            Padding="16">
+        <VerticalStackLayout Spacing="12">
+            <Label Text="{x:Static resx:AppResources.ArrangeTitle}"
+                   FontSize="18"
+                   FontAttributes="Bold"
+                   TextColor="{DynamicResource PrimaryText}" />
+            <Label Text="{x:Static resx:AppResources.ArrangeSubtitle}"
+                   FontSize="14"
+                   TextColor="{DynamicResource SecondaryText}"
+                   LineBreakMode="WordWrap" />
+
+            <VerticalStackLayout Spacing="8">
+                <Label Text="{x:Static resx:AppResources.GenreLabel}"
+                       FontSize="14"
+                       FontAttributes="Bold"
+                       TextColor="{DynamicResource PrimaryText}" />
+                <FlexLayout x:Name="GenreFlex"
+                            Wrap="Wrap"
+                            AlignItems="Start"
+                            AlignContent="Start"
+                            JustifyContent="Start"
+                            Direction="Row" />
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Spacing="8">
+                <Label Text="{x:Static resx:AppResources.MinBitrateLabel}"
+                       FontSize="14"
+                       FontAttributes="Bold"
+                       TextColor="{DynamicResource PrimaryText}" />
+                <FlexLayout x:Name="BitrateFlex"
+                            Wrap="Wrap"
+                            AlignItems="Start"
+                            AlignContent="Start"
+                            JustifyContent="Start"
+                            Direction="Row" />
+            </VerticalStackLayout>
+        </VerticalStackLayout>
+    </Border>
+
+</StackLayout>

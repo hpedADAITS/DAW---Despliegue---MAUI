@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+
+    
+    <Color x:Key="LightBackground">#f8fafc</Color>
+    <Color x:Key="LightCardBackground">#ffffff</Color>
+    <Color x:Key="LightPrimaryText">#1e293b</Color>
+    <Color x:Key="LightSecondaryText">#64748b</Color>
+    <Color x:Key="LightTertiaryText">#94a3b8</Color>
+    <Color x:Key="LightBorder">#e2e8f0</Color>
+    <Color x:Key="LightAccent">#7C3AED</Color>
+    <Color x:Key="LightAccentLight">#a78bfa</Color>
+    <Color x:Key="LightButtonBackground">#f1f5f9</Color>
+    <Color x:Key="LightSurface">#fffbfe</Color>
+    <Color x:Key="LightOnSurface">#1c1b1f</Color>
+    <Color x:Key="LightSurfaceVariant">#e7e0ec</Color>
+    <Color x:Key="LightOnSurfaceVariant">#49454f</Color>
+    <Color x:Key="LightPrimaryContainer">#eaddff</Color>
+    <Color x:Key="LightOnPrimaryContainer">#21005d</Color>
+
+    
+    <Color x:Key="DarkBackground">#0f172a</Color>
+    <Color x:Key="DarkCardBackground">#1e293b</Color>
+    <Color x:Key="DarkPrimaryText">#f1f5f9</Color>
+    <Color x:Key="DarkSecondaryText">#cbd5e1</Color>
+    <Color x:Key="DarkTertiaryText">#94a3b8</Color>
+    <Color x:Key="DarkBorder">#334155</Color>
+    <Color x:Key="DarkAccent">#a78bfa</Color>
+    <Color x:Key="DarkAccentLight">#c4b5fd</Color>
+    <Color x:Key="DarkButtonBackground">#334155</Color>
+    <Color x:Key="DarkSurface">#141218</Color>
+    <Color x:Key="DarkOnSurface">#e6e0e9</Color>
+    <Color x:Key="DarkSurfaceVariant">#49454f</Color>
+    <Color x:Key="DarkOnSurfaceVariant">#cac4d0</Color>
+    <Color x:Key="DarkPrimaryContainer">#4f378b</Color>
+    <Color x:Key="DarkOnPrimaryContainer">#eaddff</Color>
+
+    
+    <Color x:Key="PageBackground">#f8fafc</Color>
+    <Color x:Key="CardBackground">#ffffff</Color>
+    <Color x:Key="PrimaryText">#1e293b</Color>
+    <Color x:Key="SecondaryText">#64748b</Color>
+    <Color x:Key="TertiaryText">#94a3b8</Color>
+    <Color x:Key="BorderColor">#e2e8f0</Color>
+    <Color x:Key="AccentColor">#7C3AED</Color>
+    <Color x:Key="ButtonBackground">#f1f5f9</Color>
+    <Color x:Key="SliderMinColor">#7C3AED</Color>
+    <Color x:Key="SliderMaxColor">#e2e8f0</Color>
+    <Color x:Key="Surface">#fffbfe</Color>
+    <Color x:Key="OnSurface">#1c1b1f</Color>
+    <Color x:Key="SurfaceVariant">#e7e0ec</Color>
+    <Color x:Key="OnSurfaceVariant">#49454f</Color>
+    <Color x:Key="PrimaryContainer">#eaddff</Color>
+    <Color x:Key="OnPrimaryContainer">#21005d</Color>
+
+</ResourceDictionary>

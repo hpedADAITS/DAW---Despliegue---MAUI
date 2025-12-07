@@ -1,0 +1,29 @@
+# Editors/IDE
+.vs/
+.idea/
+.vscode/
+
+MauiApp1/MauiApp1/bin/
+MauiApp1/MauiApp1/obj/
+*.csproj.user
+*.user
+*.userprefs
+*.suo
+
+# Mobile packages/keys
+*.keystore
+*.p12
+*.pfx
+*.ipa
+*.app
+*.dSYM
+
+# Node API
+api-server/node_modules/
+api-server/npm-debug.log*
+api-server/.env
+
+# OS junk
+.DS_Store
+Thumbs.db
+/api-server/covers

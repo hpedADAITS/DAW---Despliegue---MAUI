@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<StackLayout xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:resx="clr-namespace:MauiApp1.Resources.Strings"
+             x:Class="MauiApp1.Views.SettingsView"
+             Spacing="16"
+             Padding="0">
+
+    <StackLayout.Resources>
+        <Style x:Key="PrimaryButtonStyle" TargetType="Button">
+            <Setter Property="CornerRadius" Value="16" />
+            <Setter Property="HeightRequest" Value="44" />
+            <Setter Property="FontAttributes" Value="Bold" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="Padding" Value="16,10" />
+            <Setter Property="BackgroundColor" Value="#6750A4" />
+            <Setter Property="TextColor" Value="White" />
+            <Setter Property="BorderWidth" Value="0" />
+        </Style>
+    </StackLayout.Resources>
+
+    
+    <Border StrokeShape="RoundRectangle 20"
+            StrokeThickness="0"
+            BackgroundColor="{DynamicResource Surface}"
+            Padding="16">
+        <Grid RowDefinitions="Auto,Auto" RowSpacing="8">
+            <Label Grid.Row="0"
+                   Text="{x:Static resx:AppResources.ThemeLabel}"
+                   FontSize="14"
+                   FontAttributes="Bold"
+                   TextColor="{DynamicResource PrimaryText}" />
+            <Picker x:Name="ThemePicker"
+                    Grid.Row="1"
+                    Title="{x:Static resx:AppResources.ThemePickerTitle}"
+                    TextColor="{DynamicResource PrimaryText}"
+                    BackgroundColor="{DynamicResource SurfaceVariant}">
+                <Picker.Items>
+                    <x:Static Member="resx:AppResources.LightOption" />
+                    <x:Static Member="resx:AppResources.DarkOption" />
+                </Picker.Items>
+            </Picker>
+        </Grid>
+    </Border>
+
+    <Border StrokeShape="RoundRectangle 20"
+            StrokeThickness="0"
+            BackgroundColor="{DynamicResource Surface}"
+            Padding="16">
+        <Grid RowDefinitions="Auto,Auto" RowSpacing="8">
+            <Label Grid.Row="0"
+                   Text="{x:Static resx:AppResources.LanguageLabel}"
+                   FontSize="14"
+                   FontAttributes="Bold"
+                   TextColor="{DynamicResource PrimaryText}" />
+            <Picker x:Name="LanguagePicker"
+                    Grid.Row="1"
+                    Title="{x:Static resx:AppResources.LanguagePickerTitle}"
+                    TextColor="{DynamicResource PrimaryText}"
+                    BackgroundColor="{DynamicResource SurfaceVariant}">
+                <Picker.Items>
+                    <x:Static Member="resx:AppResources.LanguageSpanish" />
+                    <x:Static Member="resx:AppResources.LanguageEnglish" />
+                </Picker.Items>
+            </Picker>
+        </Grid>
+    </Border>
+
+    
+    <Border StrokeShape="RoundRectangle 20"
+            StrokeThickness="1"
+            Stroke="{DynamicResource BorderColor}"
+            BackgroundColor="{DynamicResource Surface}"
+            Padding="16">
+        <VerticalStackLayout Spacing="8">
+            <Label Text="{x:Static resx:AppResources.AboutLabel}"
+                   FontSize="14"
+                   FontAttributes="Bold"
+                   TextColor="{DynamicResource PrimaryText}" />
+            <Label Text="{x:Static resx:AppResources.AppNameVersion}"
+                   FontSize="12"
+                   TextColor="{DynamicResource SecondaryText}" />
+            <Label Text="{x:Static resx:AppResources.AppDescription}"
+                   FontSize="11"
+                   TextColor="{DynamicResource TertiaryText}"
+                   LineBreakMode="WordWrap" />
+        </VerticalStackLayout>
+    </Border>
+
+    
+    <Border StrokeShape="RoundRectangle 20"
+            StrokeThickness="1"
+            Stroke="{DynamicResource BorderColor}"
+            BackgroundColor="{DynamicResource Surface}"
+            Padding="16">
+        <VerticalStackLayout Spacing="8">
+            <Label Text="{x:Static resx:AppResources.CreditsLabel}"
+                   FontSize="14"
+                   FontAttributes="Bold"
+                   TextColor="{DynamicResource PrimaryText}" />
+            <Label Text="{x:Static resx:AppResources.CreditsDesign}"
+                   FontSize="12"
+                   TextColor="{DynamicResource SecondaryText}" />
+            <Label Text="{x:Static resx:AppResources.CreditsDirectory}"
+                   FontSize="12"
+                   TextColor="{DynamicResource SecondaryText}"
+                   LineBreakMode="WordWrap" />
+            <Label Text="{x:Static resx:AppResources.CreditsIcons}"
+                   FontSize="12"
+                   TextColor="{DynamicResource SecondaryText}"
+                   LineBreakMode="WordWrap" />
+        </VerticalStackLayout>
+    </Border>
+
+    
+    <Border StrokeShape="RoundRectangle 20"
+            StrokeThickness="1"
+            Stroke="{DynamicResource BorderColor}"
+            BackgroundColor="{DynamicResource Surface}"
+            Padding="16">
+        <VerticalStackLayout Spacing="8">
+            <Label Text="{x:Static resx:AppResources.ApiStatusTitle}"
+                   FontSize="14"
+                   FontAttributes="Bold"
+                   TextColor="{DynamicResource PrimaryText}" />
+            <Label Text="{x:Static resx:AppResources.ApiStatusBackend}"
+                   FontSize="12"
+                   TextColor="{DynamicResource SecondaryText}"
+                   LineBreakMode="WordWrap" />
+            <Label Text="{x:Static resx:AppResources.ApiStatusDirectory}"
+                   FontSize="12"
+                   TextColor="{DynamicResource SecondaryText}"
+                   LineBreakMode="WordWrap" />
+            <Label x:Name="ApiStatusLabel"
+                   Text="{x:Static resx:AppResources.StatusNotChecked}"
+                   FontSize="12"
+                   TextColor="{DynamicResource TertiaryText}"
+                   LineBreakMode="WordWrap" />
+            <Button Text="{x:Static resx:AppResources.CheckApiStatusButton}"
+                    Style="{StaticResource PrimaryButtonStyle}"
+                    Clicked="OnApiStatusCheckClicked" />
+        </VerticalStackLayout>
+    </Border>
+
+</StackLayout>
