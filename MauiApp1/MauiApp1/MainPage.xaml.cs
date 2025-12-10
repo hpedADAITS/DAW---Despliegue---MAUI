@@ -169,56 +169,58 @@ namespace MauiApp1
                             System.Diagnostics.Debug.WriteLine($"[API] JSON received ({jsonContent.Length} bytes)");
                             
                             var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-                            var songs = JsonSerializer.Deserialize<List<Song>>(jsonContent, options);
-                            System.Diagnostics.Debug.WriteLine($"[API] Deserialized {songs?.Count ?? 0} songs");
+                            var songs = JsonSerializer.Deserialize<List<Song>>(jsonContent, options) ?? new List<Song>();
+                            System.Diagnostics.Debug.WriteLine($"[API] Deserialized {songs.Count} songs");
                             
-                            if (songs != null && songs.Count > 0)
+                            playlist.Clear();
+                            visiblePlaylist.Clear();
+                            missingCoverPlaylist.Clear();
+                            loadOrderCounter = 0;
+
+                            foreach (var s in songs)
                             {
-                                 playlist.Clear();
-                                 loadOrderCounter = 0;
-                                 foreach (var s in songs)
-                                 {
-                                     playlist.Add(new AudioTrack
-                                     {
-                                         Id = s.Id,
-                                         Title = s.Title ?? AppResources.UnknownTitle,
-                                         Artist = s.Artist ?? AppResources.UnknownArtist,
-                                         Duration = s.Duration ?? "0:00",
-                                         DurationSeconds = s.DurationSeconds,
-                                         Genre = s.Genre ?? AppResources.UnknownGenre,
-                                         Url = s.Url ?? "",
-                                         CoverUrl = s.CoverUrl ?? "",
-                                         Bitrate = s.Bitrate,
-                                         LoadOrder = loadOrderCounter++,
-                                         HasCover = true
-                                     });
-                                 }
-                                 
-                                System.Diagnostics.Debug.WriteLine($"[API] Playlist loaded: {playlist.Count} tracks");
-                                
-                                MainThread.BeginInvokeOnMainThread(() =>
+                                playlist.Add(new AudioTrack
                                 {
-                                    if (PlaylistView.ItemsSource != playlist)
-                                    {
-                                        PlaylistView.ItemsSource = visiblePlaylist;
-                                    }
-
-                                    if (!isPlaying && playlist.Count > 0)
-                                    {
-                                        currentTrackIndex = 0;
-                                        UpdateCurrentTrackDisplay();
-                                    }
-
-                                    ApplySort(currentSortOption);
-                                    UpdateFilterOptionsFromPlaylist();
-                                    System.Diagnostics.Debug.WriteLine($"[UI] Playlist displayed");
+                                    Id = s.Id,
+                                    Title = s.Title ?? AppResources.UnknownTitle,
+                                    Artist = s.Artist ?? AppResources.UnknownArtist,
+                                    Duration = s.Duration ?? "0:00",
+                                    DurationSeconds = s.DurationSeconds,
+                                    Genre = s.Genre ?? AppResources.UnknownGenre,
+                                    Url = s.Url ?? "",
+                                    CoverUrl = s.CoverUrl ?? "",
+                                    Bitrate = s.Bitrate,
+                                    LoadOrder = loadOrderCounter++,
+                                    HasCover = true
                                 });
-                                return; 
                             }
-                            else
+                            
+                            System.Diagnostics.Debug.WriteLine($"[API] Playlist loaded: {playlist.Count} tracks");
+                            
+                            MainThread.BeginInvokeOnMainThread(() =>
                             {
-                                System.Diagnostics.Debug.WriteLine($"[API] Empty response");
-                            }
+                                if (PlaylistView.ItemsSource != playlist)
+                                {
+                                    PlaylistView.ItemsSource = visiblePlaylist;
+                                }
+
+                                if (!isPlaying && playlist.Count > 0)
+                                {
+                                    currentTrackIndex = 0;
+                                    UpdateCurrentTrackDisplay();
+                                }
+                                else if (playlist.Count == 0)
+                                {
+                                    currentTrackIndex = -1;
+                                    UpdatePlaybackUI();
+                                    UpdateMissingCoverToggleText();
+                                }
+
+                                ApplySort(currentSortOption);
+                                UpdateFilterOptionsFromPlaylist();
+                                System.Diagnostics.Debug.WriteLine("[UI] Playlist displayed");
+                            });
+                            return; 
                         }
                         else
                         {
@@ -307,11 +309,16 @@ namespace MauiApp1
                                         LoadOrder = loadOrderCounter++,
                                         HasCover = radio.HasCover && !string.IsNullOrWhiteSpace(radio.CoverUrl)
                                     };
-
+                                
                                     playlist.Add(audioTrack);
                                 }
                                 ApplySort(currentSortOption);
                                 UpdateFilterOptionsFromPlaylist();
+                                if (currentTrackIndex < 0 && playlist.Count > 0)
+                                {
+                                    currentTrackIndex = 0;
+                                    UpdateCurrentTrackDisplay();
+                                }
                                 System.Diagnostics.Debug.WriteLine($"[Radio] SUCCESS: Playlist now has {playlist.Count} total tracks");
                             });
                         }
@@ -351,20 +358,10 @@ namespace MauiApp1
             UpdateTabVisualState(NowPlayingTab);
         }
 
-        private void OnPlaylistClicked(object sender, EventArgs e)
-        {
-            NowPlayingViewContent.IsVisible = false;
-            PlaylistViewContent.IsVisible = true;
-            PlaylistSettingsViewContent.IsVisible = false;
-            SettingsViewContent.IsVisible = false;
-
-            UpdateTabVisualState(PlaylistTab);
-        }
-
         private void OnPlaylistSettingsClicked(object sender, EventArgs e)
         {
             NowPlayingViewContent.IsVisible = false;
-            PlaylistViewContent.IsVisible = false;
+            PlaylistViewContent.IsVisible = true;
             PlaylistSettingsViewContent.IsVisible = true;
             SettingsViewContent.IsVisible = false;
 
@@ -902,7 +899,7 @@ namespace MauiApp1
 
         private void UpdateTabVisualState(Button activeTab)
         {
-            var tabs = new[] { NowPlayingTab, PlaylistTab, SettingsTab };
+            var tabs = new[] { NowPlayingTab, PlaylistSettingsTab, SettingsTab };
             foreach (var tab in tabs)
             {
                 bool isActive = tab == activeTab;

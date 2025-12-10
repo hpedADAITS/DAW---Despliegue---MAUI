@@ -16,8 +16,36 @@ RadioBrowser.userAgent = RADIO_BROWSER_AGENT;
 RadioBrowser.service_url = RADIO_BROWSER_HOSTS[Math.floor(Math.random() * RADIO_BROWSER_HOSTS.length)];
 
 
+const defaultOrigins = [
+  'http://localhost',
+  'http://127.0.0.1',
+  'http://10.0.2.2',
+  'https://localhost',
+  'https://127.0.0.1'
+];
+const envOrigins = (process.env.CORS_ORIGINS || '')
+  .split(',')
+  .map((o) => o.trim())
+  .filter(Boolean);
+const allowedOrigins = [...defaultOrigins, ...envOrigins];
+const allowAzureWildcard = (process.env.CORS_ALLOW_AZURE || 'true').toLowerCase() === 'true';
+
 const corsOptions = {
-  origin: ['http://localhost', 'http://127.0.0.1', 'http://10.0.2.2'],
+  origin: (origin, callback) => {
+    if (!origin) {
+      return callback(null, true);
+    }
+
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+
+    if (allowAzureWildcard && /^https?:\/\/[a-z0-9.-]+\.azurewebsites\.net(:\d+)?$/i.test(origin)) {
+      return callback(null, true);
+    }
+
+    return callback(new Error('Not allowed by CORS'), false);
+  },
   credentials: true,
   optionsSuccessStatus: 200
 };
@@ -226,7 +254,7 @@ app.get('/api/songs', async (req, res) => {
   try {
     const protocol = req.protocol || 'http';
     const host = req.get('host') || `localhost:${port}`;
-    const baseUrl = `${protocol}:
+    const baseUrl = `${protocol}://${host}`;
     const songs = await buildDynamicSongList(baseUrl);
     res.json(songs);
   } catch (error) {
@@ -239,7 +267,7 @@ app.get('/api/songs/:id', async (req, res) => {
   try {
     const protocol = req.protocol || 'http';
     const host = req.get('host') || `localhost:${port}`;
-    const baseUrl = `${protocol}:
+    const baseUrl = `${protocol}://${host}`;
     const songs = await buildDynamicSongList(baseUrl);
     const song = songs.find(s => s.id === parseInt(req.params.id));
     if (song) {
@@ -254,7 +282,7 @@ app.get('/api/songs/:id', async (req, res) => {
 });
 
 
-const FALLBACK_RADIO_COVER = 'https:
+const FALLBACK_RADIO_COVER = 'https://via.placeholder.com/300?text=Radio';
 const MAX_RADIO_LIMIT = 80;
 const DEFAULT_RADIO_LIMIT = 50;
 const MIN_RADIO_BITRATE = 320;
@@ -551,8 +579,8 @@ app.get('/api/radios/variety', async (req, res) => {
 });
 
 app.listen(port, '0.0.0.0', () => {
-  console.log(`API listening on http:
-  console.log(`  From host machine: http:
-  console.log(`  From Android emulator: http:
+  console.log(`API listening on http://0.0.0.0:${port}`);
+  console.log(`  From host machine: http://localhost:${port}`);
+  console.log(`  From Android emulator: http://10.0.2.2:${port}`);
   console.log(`  Dynamic scanning enabled: Songs auto-detected from ./songs directory`);
 });

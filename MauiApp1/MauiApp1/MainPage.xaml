@@ -40,34 +40,27 @@
             <Border.Shadow>
                 <Shadow Brush="#1A000000" Offset="0,-4" Radius="18" />
             </Border.Shadow>
-            <Grid ColumnDefinitions="*,*,*,*" ColumnSpacing="8">
+            <Grid ColumnDefinitions="*,*,*" ColumnSpacing="8">
                 <Button x:Name="NowPlayingTab"
                         Text="{x:Static resx:AppResources.ShellTabNow}"
                         Style="{StaticResource TabButtonStyle}"
                         BackgroundColor="#6750A4"
                         TextColor="White"
                         Clicked="OnNowPlayingClicked" />
-                <Button x:Name="PlaylistTab"
-                        Text="{x:Static resx:AppResources.ShellTabPlaylist}"
-                        Style="{StaticResource TabButtonStyle}"
-                        BackgroundColor="{DynamicResource SurfaceVariant}"
-                        TextColor="{DynamicResource OnSurface}"
-                        Clicked="OnPlaylistClicked"
-                        Grid.Column="1" />
                 <Button x:Name="PlaylistSettingsTab"
                         Text="{x:Static resx:AppResources.ShellTabArrange}"
                         Style="{StaticResource TabButtonStyle}"
                         BackgroundColor="{DynamicResource SurfaceVariant}"
                         TextColor="{DynamicResource OnSurface}"
                         Clicked="OnPlaylistSettingsClicked"
-                        Grid.Column="2" />
+                        Grid.Column="1" />
                 <Button x:Name="SettingsTab"
                         Text="{x:Static resx:AppResources.SettingsTabText}"
                         Style="{StaticResource TabButtonStyle}"
                         BackgroundColor="{DynamicResource SurfaceVariant}"
                         TextColor="{DynamicResource OnSurface}"
                         Clicked="OnSettingsClicked"
-                        Grid.Column="3" />
+                        Grid.Column="2" />
             </Grid>
         </Border>
     </Grid>
