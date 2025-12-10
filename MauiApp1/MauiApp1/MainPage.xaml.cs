@@ -23,8 +23,9 @@ namespace MauiApp1
         private int currentTrackIndex = -1;
         private bool isPlaying = false;
 
+        private const int RadioStationLimit = 120;
+        private const string DefaultDockerApiUrl = "http://localhost:3000";
         private readonly string apiBaseUrl;
-        private readonly string songsEndpoint;
         private readonly string radiosEndpoint;
         private readonly Color primaryAccent = Color.FromArgb("#6750A4");
         private readonly Color neutralSurface = Color.FromArgb("#E8DEF8");
@@ -82,11 +83,11 @@ namespace MauiApp1
             MissingCoverView.ItemsSource = missingCoverPlaylist;
             UpdateMissingCoverToggleText();
 
-            apiBaseUrl = DeviceInfo.Current.Platform == DevicePlatform.Android
-                ? "http://10.0.2.2:3000"
-                : "http://localhost:3000";
-            songsEndpoint = $"{apiBaseUrl}/api/songs";
-            radiosEndpoint = $"{apiBaseUrl}/api/radios/variety?limit=25";
+            apiBaseUrl = Environment.GetEnvironmentVariable("API_BASE_URL")?.TrimEnd('/') ??
+                (DeviceInfo.Current.Platform == DevicePlatform.Android
+                    ? "http://10.0.2.2:3000"
+                    : DefaultDockerApiUrl);
+            radiosEndpoint = $"{apiBaseUrl}/api/radios/comprehensive?limit={RadioStationLimit}";
 
             
             VolumeSlider = (Slider)NowPlayingViewContent.FindByName("VolumeSlider")!;
@@ -136,127 +137,7 @@ namespace MauiApp1
 
             MainThread.BeginInvokeOnMainThread(async () => 
             {
-                await LoadPlaylistFromAPI();
-                System.Diagnostics.Debug.WriteLine($"[Init] Songs loaded, waiting 2s before radio...");
-                await Task.Delay(2000);
                 await LoadRadioStationsAsync();
-            });
-        }
-
-        private async Task LoadPlaylistFromAPI()
-        {
-            const int maxRetries = 8;
-            int retryCount = 0;
-            
-            while (retryCount < maxRetries)
-            {
-                try
-                {
-                    using (var client = new HttpClient())
-                    {
-                        System.Diagnostics.Debug.WriteLine($"[API] Loading songs from: {songsEndpoint} (attempt {retryCount + 1}/{maxRetries})");
-                        
-                        
-                        client.Timeout = TimeSpan.FromSeconds(10);
-                        client.DefaultRequestHeaders.ExpectContinue = false;
-                        
-                        var response = await client.GetAsync(songsEndpoint);
-                        System.Diagnostics.Debug.WriteLine($"[API] Response status: {response.StatusCode}");
-                        
-                        if (response.IsSuccessStatusCode)
-                        {
-                            var jsonContent = await response.Content.ReadAsStringAsync();
-                            System.Diagnostics.Debug.WriteLine($"[API] JSON received ({jsonContent.Length} bytes)");
-                            
-                            var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-                            var songs = JsonSerializer.Deserialize<List<Song>>(jsonContent, options) ?? new List<Song>();
-                            System.Diagnostics.Debug.WriteLine($"[API] Deserialized {songs.Count} songs");
-                            
-                            playlist.Clear();
-                            visiblePlaylist.Clear();
-                            missingCoverPlaylist.Clear();
-                            loadOrderCounter = 0;
-
-                            foreach (var s in songs)
-                            {
-                                playlist.Add(new AudioTrack
-                                {
-                                    Id = s.Id,
-                                    Title = s.Title ?? AppResources.UnknownTitle,
-                                    Artist = s.Artist ?? AppResources.UnknownArtist,
-                                    Duration = s.Duration ?? "0:00",
-                                    DurationSeconds = s.DurationSeconds,
-                                    Genre = s.Genre ?? AppResources.UnknownGenre,
-                                    Url = s.Url ?? "",
-                                    CoverUrl = s.CoverUrl ?? "",
-                                    Bitrate = s.Bitrate,
-                                    LoadOrder = loadOrderCounter++,
-                                    HasCover = true
-                                });
-                            }
-                            
-                            System.Diagnostics.Debug.WriteLine($"[API] Playlist loaded: {playlist.Count} tracks");
-                            
-                            MainThread.BeginInvokeOnMainThread(() =>
-                            {
-                                if (PlaylistView.ItemsSource != playlist)
-                                {
-                                    PlaylistView.ItemsSource = visiblePlaylist;
-                                }
-
-                                if (!isPlaying && playlist.Count > 0)
-                                {
-                                    currentTrackIndex = 0;
-                                    UpdateCurrentTrackDisplay();
-                                }
-                                else if (playlist.Count == 0)
-                                {
-                                    currentTrackIndex = -1;
-                                    UpdatePlaybackUI();
-                                    UpdateMissingCoverToggleText();
-                                }
-
-                                ApplySort(currentSortOption);
-                                UpdateFilterOptionsFromPlaylist();
-                                System.Diagnostics.Debug.WriteLine("[UI] Playlist displayed");
-                            });
-                            return; 
-                        }
-                        else
-                        {
-                            System.Diagnostics.Debug.WriteLine($"[API] HTTP {response.StatusCode}");
-                        }
-                    }
-                }
-                catch (HttpRequestException ex)
-                {
-                    System.Diagnostics.Debug.WriteLine($"[API] Network error: {ex.Message}");
-                }
-                catch (JsonException ex)
-                {
-                    System.Diagnostics.Debug.WriteLine($"[API] JSON error: {ex.Message}");
-                }
-                catch (Exception ex)
-                {
-                    System.Diagnostics.Debug.WriteLine($"[API] Error: {ex.GetType().Name} - {ex.Message}");
-                }
-                
-                retryCount++;
-                if (retryCount < maxRetries)
-                {
-                    
-                    int delayMs = retryCount * 1000;
-                    System.Diagnostics.Debug.WriteLine($"[API] Retrying in {delayMs}ms...");
-                    await Task.Delay(delayMs);
-                }
-            }
-            
-            
-            MainThread.BeginInvokeOnMainThread(async () =>
-            {
-                await DisplayAlert(AppResources.ApiUnavailableTitle, 
-                    AppResources.ApiUnavailableMessage, 
-                    AppResources.OkButton);
             });
         }
 
@@ -995,22 +876,6 @@ namespace MauiApp1
         public int LoadOrder { get; set; } = 0;
         public string? CountryCode { get; set; }
         public bool HasCover { get; set; } = true;
-    }
-
-    public class Song
-    {
-        public int Id { get; set; }
-        public string? Title { get; set; }
-        public string? Artist { get; set; }
-        public string? Duration { get; set; }
-        public int DurationSeconds { get; set; }
-        public string? Genre { get; set; }
-        public string? File { get; set; }
-        public string? Url { get; set; }
-        public string? CoverUrl { get; set; }
-        public int Bitrate { get; set; }
-        public bool IsRadio { get; set; }
-        public int ClickCount { get; set; }
     }
 
     public class Radio

@@ -1,8 +1,5 @@
 const express = require('express');
 const cors = require('cors');
-const path = require('path');
-const fs = require('fs');
-const { parseFile } = require('music-metadata');
 const RadioBrowser = require('radio-browser');
 
 const app = express();
@@ -54,11 +51,6 @@ app.use(cors(corsOptions));
 app.use(express.json());
 
 
-app.use('/songs', express.static(path.join(__dirname, 'songs')));
-
-
-app.use('/covers', express.static(path.join(__dirname, 'covers')));
-
 const state = {
   counter: 3,
   lastUpdated: new Date().toISOString(),
@@ -68,157 +60,6 @@ const greeting = {
   title: 'Welcome to Audio Media Player',
   subtitle: 'Your music streaming companion',
 };
-
-const weather = [
-  { id: 1, day: 'Monday', summary: 'Sunny', temperatureC: 26 },
-  { id: 2, day: 'Tuesday', summary: 'Cloudy', temperatureC: 22 },
-  { id: 3, day: 'Wednesday', summary: 'Storms', temperatureC: 19 },
-  { id: 4, day: 'Thursday', summary: 'Partly cloudy', temperatureC: 24 },
-  { id: 5, day: 'Friday', summary: 'Breezy', temperatureC: 23 },
-];
-
-
-
-
-const metadataCache = {};
-const CACHE_DURATION = 60 * 60 * 1000; 
-
-
-async function scanAudioFiles() {
-  const songsDir = path.join(__dirname, 'songs');
-  
-  if (!fs.existsSync(songsDir)) {
-    console.warn('Songs directory not found:', songsDir);
-    return [];
-  }
-
-  const files = fs.readdirSync(songsDir).filter(file => 
-    file.toLowerCase().endsWith('.mp3') || 
-    file.toLowerCase().endsWith('.wav') ||
-    file.toLowerCase().endsWith('.m4a')
-  );
-
-  return files.sort();
-}
-
-
-async function extractAudioMetadata(filename) {
-  const cacheKey = filename;
-  
-  
-  if (metadataCache[cacheKey] && Date.now() - metadataCache[cacheKey].timestamp < CACHE_DURATION) {
-    return metadataCache[cacheKey].data;
-  }
-
-  try {
-    const songPath = path.join(__dirname, 'songs', filename);
-    
-    if (!fs.existsSync(songPath)) {
-      return null;
-    }
-    
-    const metadata = await parseFile(songPath);
-    const duration = metadata.format.duration || 0;
-    const bitrate = metadata.format.bitrate ? Math.round(metadata.format.bitrate / 1000) : 128;
-    
-    
-    const tags = metadata.common || {};
-    
-    const data = {
-      duration: Math.round(duration),
-      bitrate: bitrate || 128,
-      format: metadata.format.container || 'mp3',
-      title: tags.title || null,
-      artist: tags.artist || null,
-      genre: tags.genre ? (Array.isArray(tags.genre) ? tags.genre[0] : tags.genre) : null,
-    };
-    
-    
-    metadataCache[cacheKey] = {
-      data,
-      timestamp: Date.now(),
-    };
-    
-    return data;
-  } catch (error) {
-    console.warn(`Could not extract metadata from ${filename}:`, error.message);
-    return {
-      duration: 0,
-      bitrate: 128,
-      format: 'mp3',
-      title: null,
-      artist: null,
-      genre: null,
-    };
-  }
-}
-
-
-function getTitleFromFilename(filename) {
-  const basename = path.parse(filename).name;
-  
-  const cleaned = basename.replace(/^[\d\-_\s]+/, '').trim();
-  
-  return cleaned || basename;
-}
-
-
-function formatDuration(seconds) {
-  const mins = Math.floor(seconds / 60);
-  const secs = Math.floor(seconds % 60);
-  return `${mins}:${secs.toString().padStart(2, '0')}`;
-}
-
-
-async function buildDynamicSongList(baseUrl) {
-  const audioFiles = await scanAudioFiles();
-  
-  if (audioFiles.length === 0) {
-    console.warn('No audio files found in songs directory');
-    return [];
-  }
-
-  const songs = await Promise.all(
-    audioFiles.map(async (file, index) => {
-      const audioMetadata = await extractAudioMetadata(file);
-      
-      
-      const title = audioMetadata.title || getTitleFromFilename(file);
-      const artist = audioMetadata.artist || 'Unknown Artist';
-      const genre = audioMetadata.genre || 'Unknown';
-      
-      
-      const coverNum = Math.min(index + 1, 8);
-      const coverFile = `0${coverNum}.jpg`;
-      
-      return {
-        id: index + 1,
-        title,
-        artist,
-        duration: formatDuration(audioMetadata.duration),
-        durationSeconds: audioMetadata.duration,
-        genre,
-        file,
-        bitrate: audioMetadata.bitrate,
-        format: audioMetadata.format,
-        url: `${baseUrl}/songs/${file}`,
-        coverUrl: `${baseUrl}/covers/${coverFile}`,
-      };
-    })
-  );
-
-  return songs;
-}
-
-function toFahrenheit(celsius) {
-  return Math.round((celsius * 9) / 5 + 32);
-}
-
-const weatherWithFahrenheit = () =>
-  weather.map((entry) => ({
-    ...entry,
-    temperatureF: toFahrenheit(entry.temperatureC),
-  }));
 
 app.get('/api/status', (req, res) => {
   res.json({
@@ -246,48 +87,34 @@ app.post('/api/counter', (req, res) => {
   res.json(state);
 });
 
-app.get('/api/weather', (req, res) => {
-  res.json(weatherWithFahrenheit());
-});
-
-app.get('/api/songs', async (req, res) => {
-  try {
-    const protocol = req.protocol || 'http';
-    const host = req.get('host') || `localhost:${port}`;
-    const baseUrl = `${protocol}://${host}`;
-    const songs = await buildDynamicSongList(baseUrl);
-    res.json(songs);
-  } catch (error) {
-    console.error('Error fetching songs:', error);
-    res.status(500).json({ error: 'Failed to fetch songs' });
-  }
-});
-
-app.get('/api/songs/:id', async (req, res) => {
-  try {
-    const protocol = req.protocol || 'http';
-    const host = req.get('host') || `localhost:${port}`;
-    const baseUrl = `${protocol}://${host}`;
-    const songs = await buildDynamicSongList(baseUrl);
-    const song = songs.find(s => s.id === parseInt(req.params.id));
-    if (song) {
-      res.json(song);
-    } else {
-      res.status(404).json({ error: 'Song not found' });
-    }
-  } catch (error) {
-    console.error('Error fetching song:', error);
-    res.status(500).json({ error: 'Failed to fetch song' });
-  }
-});
-
 
 const FALLBACK_RADIO_COVER = 'https://via.placeholder.com/300?text=Radio';
-const MAX_RADIO_LIMIT = 80;
+const MAX_RADIO_LIMIT = 1024;
 const DEFAULT_RADIO_LIMIT = 50;
-const MIN_RADIO_BITRATE = 320;
+const MIN_RADIO_BITRATE = 192;
 const RADIO_CACHE_TTL = 10 * 60 * 1000; 
 const radioCache = new Map();
+
+// Extended music genres for comprehensive radio station discovery
+const EXTENDED_MUSIC_GENRES = [
+  // Pop & Contemporary
+  'pop', 'indie pop', 'synth-pop', 'electropop',
+  // Rock
+  'rock', 'alternative rock', 'indie rock', 'classic rock', 'hard rock', 'punk',
+  // Electronic & Dance
+  'electronic', 'house', 'techno', 'trance', 'drum and bass', 'dubstep', 'edm',
+  // Hip Hop & Rap
+  'hip hop', 'rap', 'trap', 'grime', 'r&b', 'soul',
+  // Latin & Reggae
+  'latin', 'reggae', 'reggaeton', 'salsa', 'bachata', 'cumbia', 'merengue',
+  // Jazz & Blues
+  'jazz', 'blues', 'funk', 'smooth jazz',
+  // Classical & Acoustic
+  'classical', 'acoustic', 'folk', 'singer-songwriter',
+  // Other Genres
+  'ambient', 'lofi', 'chill', 'instrumental', 'world music', 'experimental',
+  'metal', 'country', 'gospel', 'news', 'talk', 'spoken word'
+];
 
 function extractPrimaryTag(tags) {
   if (!tags) return 'Mixed';
@@ -371,11 +198,23 @@ function filterStationsByBitrate(stations, minBitrate = MIN_RADIO_BITRATE) {
   });
 
   if (filtered.length === 0 && minBitrate > 192) {
-    
-    return stations.filter((s) => {
+    const fallback192 = stations.filter((s) => {
       const bitrate = parseInt(s.bitrate) || 0;
       return bitrate >= 192;
     });
+    if (fallback192.length > 0) {
+      return fallback192;
+    }
+  }
+
+  if (filtered.length === 0 && minBitrate > 128) {
+    const fallback128 = stations.filter((s) => {
+      const bitrate = parseInt(s.bitrate) || 0;
+      return bitrate >= 128;
+    });
+    if (fallback128.length > 0) {
+      return fallback128;
+    }
   }
 
   return filtered;
@@ -578,9 +417,71 @@ app.get('/api/radios/variety', async (req, res) => {
   }
 });
 
+app.get('/api/radios/comprehensive', async (req, res) => {
+  try {
+    const limit = clampLimit(req.query.limit, 1024);
+    const fetchPerGenre = Math.max(10, Math.ceil(limit / EXTENDED_MUSIC_GENRES.length));
+    
+    const cacheKey = `comprehensive:${limit}`;
+    const cached = getCachedStations(cacheKey);
+    if (cached) {
+      const radios = cached.map((station, index) => mapStationToRadio(station, 'radio_comprehensive', index));
+      res.json(radios);
+      console.log(`[Radio] Returned ${radios.length} comprehensive stations (cached)`);
+      return;
+    }
+
+    console.log(`[Radio] Fetching comprehensive mix (limit: ${limit}) - ${EXTENDED_MUSIC_GENRES.length} genres in EN/ES languages`);
+
+    const genreRequests = EXTENDED_MUSIC_GENRES.map(async (genre) => {
+      try {
+        // Fetch English stations
+        const enStations = await getStationsWithFallback({
+          by: 'tag',
+          searchterm: genre,
+          limit: fetchPerGenre,
+          hidebroken: true,
+          language: 'en'
+        }).catch(() => []);
+        
+        // Fetch Spanish stations
+        const esStations = await getStationsWithFallback({
+          by: 'tag',
+          searchterm: genre,
+          limit: fetchPerGenre,
+          hidebroken: true,
+          language: 'es'
+        }).catch(() => []);
+        
+        return [...enStations, ...esStations];
+      } catch (error) {
+        console.error(`[Radio] Error fetching genre "${genre}":`, error.message);
+        return [];
+      }
+    });
+
+    console.log(`[Radio] Requesting stations from ${EXTENDED_MUSIC_GENRES.length} genres...`);
+    const allStations = await Promise.all(genreRequests);
+
+    const combinedStations = dedupeStations(allStations.flat());
+    const filteredStations = filterStationsByBitrate(combinedStations);
+    const shuffledStations = shuffleStations(filteredStations);
+    const limitedStations = shuffledStations.slice(0, limit);
+    const radios = limitedStations.map((station, index) => mapStationToRadio(station, 'radio_comprehensive', index));
+
+    setCachedStations(cacheKey, limitedStations);
+    res.json(radios);
+    console.log(`[Radio] Returned ${radios.length} comprehensive stations (fetched: ${filteredStations.length} unique, requested: ${limit})`);
+  } catch (error) {
+    console.error('Error fetching comprehensive radios:', error);
+    res.status(500).json({ error: 'Failed to fetch comprehensive radio stations' });
+  }
+});
+
 app.listen(port, '0.0.0.0', () => {
   console.log(`API listening on http://0.0.0.0:${port}`);
   console.log(`  From host machine: http://localhost:${port}`);
   console.log(`  From Android emulator: http://10.0.2.2:${port}`);
-  console.log(`  Dynamic scanning enabled: Songs auto-detected from ./songs directory`);
+  console.log(`  Local song endpoints disabled (radio-only API)`);
+  console.log(`  Comprehensive radio: ${EXTENDED_MUSIC_GENRES.length} music genres in English/Spanish`);
 });

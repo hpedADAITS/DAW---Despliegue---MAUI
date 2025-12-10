@@ -93,9 +93,7 @@ DAW---Despliegue---MAUI/
 ├── api-server/                    # Backend Express.js
 │   ├── server.js                  # Servidor principal
 │   ├── package.json               # Dependencias de Node.js
-│   ├── songs/                     # Directorio de archivos de audio
-│   ├── covers/                    # Imágenes de carátulas de canciones
-│   └── generate-*.js              # Utilidades para generar datos de prueba
+│   └── package-lock.json
 ├── build-and-run.ps1              # Script de configuración del emulador Android
 ├── install.ps1                    # Instalador de dependencias
 └── AGENTS.md                       # Documentación de configuración
@@ -103,46 +101,18 @@ DAW---Despliegue---MAUI/
 
 ## Endpoints de la API
 
-El servidor Express se ejecuta en `http://localhost:3000` y expone los siguientes endpoints:
+El servidor Express se ejecuta en `http://localhost:3000` y expone endpoints para estaciones de radio en línea (sin archivos locales):
 
 | Endpoint | Método | Respuesta |
 |----------|--------|-----------|
 | `/api/status` | GET | `{ app, api, serverTime }` |
 | `/api/greeting` | GET | `{ title, subtitle, serverTime }` |
-| `/api/songs` | GET | Array de canciones con metadatos e URLs dinámicas |
-| `/api/songs/:id` | GET | Canción individual por ID |
 | `/api/counter` | GET/POST | Estado del contador (ejemplo de mutación) |
-| `/api/weather` | GET | Datos del clima con temperaturas en Celsius y Fahrenheit |
 | `/api/radios/search` | GET | Búsqueda de estaciones de radio por término |
 | `/api/radios/topvoted` | GET | Estaciones de radio más votadas |
 | `/api/radios/random` | GET | Estaciones de radio aleatorias |
 | `/api/radios/variety` | GET | Mezcla variada de estaciones de radio |
-
-### Ejemplo: Obtener todas las canciones
-
-```bash
-curl http://localhost:3000/api/songs
-```
-
-Respuesta:
-```json
-[
-  {
-    "id": 1,
-    "title": "Título de la Canción",
-    "artist": "Nombre del Artista",
-    "duration": "4:00",
-    "durationSeconds": 240,
-    "genre": "Pop",
-    "file": "01.mp3",
-    "bitrate": 128,
-    "format": "mp3",
-    "url": "http://localhost:3000/songs/01.mp3",
-    "coverUrl": "http://localhost:3000/covers/01.jpg"
-  },
-  ...
-]
-```
+| `/api/radios/comprehensive` | GET | Mezcla amplia multi-género/idioma (usada por la app para más estaciones) |
 
 ### Ejemplo: Buscar estaciones de radio
 
@@ -152,13 +122,12 @@ curl "http://localhost:3000/api/radios/search?searchterm=jazz&limit=10"
 
 ## Conectar la App con la API
 
-La app MAUI carga las canciones automáticamente al iniciar:
+La app MAUI ahora construye la lista solo con streams de radio al iniciar:
 
-- **Emulador de Android**: el enrutamiento automático de `localhost` a `10.0.2.2` (máquina host)
-- **Dispositivos físicos/simuladores**: actualiza `ApiUrl` en `MainPage.xaml.cs`:
-  ```csharp
-  private const string ApiUrl = "http://192.168.x.x:3000/api/songs";
-  ```
+- **Emulador de Android**: `localhost` se resuelve como `http://10.0.2.2:3000`
+- **Dispositivos físicos/simuladores**: ajusta `apiBaseUrl` en `MainPage.xaml.cs` si necesitas otro host/puerto
+
+Las estaciones de radio se cargan desde `/api/radios/comprehensive?limit=120`; ajusta `RadioStationLimit` en `MainPage.xaml.cs` para más/menos resultados.
 
 ## Arquitectura
 
@@ -173,10 +142,7 @@ La app MAUI carga las canciones automáticamente al iniciar:
 ### Express.js (Servidor)
 - **Framework**: Express 5.2.1
 - **CORS**: Configurado para `localhost`, `127.0.0.1` y `10.0.2.2` (emulador Android)
-- **Escaneo dinámico**: Detecta automáticamente archivos de audio en el directorio `songs/`
-- **Metadatos**: Extrae información de archivos MP3, WAV y M4A
-- **Caché**: Almacena metadatos en caché durante 1 hora para optimizar rendimiento
-- **Radio**: Integración con Radio Browser API para estaciones de radio en línea
+- **Radio**: Integración con Radio Browser API para estaciones de radio en línea (sin archivos locales)
 
 ## Compilación para Diferentes Plataformas
 
@@ -211,6 +177,15 @@ dotnet build -f net9.0-windows -c Release
 cd api-server
 npm run dev  # Reinicio automático al cambiar archivos
 ```
+
+### Ejecutar la API desde Docker Hub (radio-only)
+```bash
+docker run -d -p 3000:3000 --name api-server hpedtor/hmauiserverapi:latest
+```
+Luego, arranca la app MAUI apuntando a ese endpoint:
+- Escritorio/iOS/Windows/macOS: usa `http://localhost:3000`
+- Emulador Android: usa `http://10.0.2.2:3000`
+- También puedes exportar `API_BASE_URL="http://localhost:3000"` para sobrescribir en tiempo de ejecución.
 
 ### Ejecutar la App MAUI
 - **Visual Studio 2022**: abre `MauiApp1.sln`, elige plataforma de destino y presiona F5
@@ -258,22 +233,15 @@ pwsh -ExecutionPolicy Bypass -File .\build-and-run.ps1 -Force -StartEmulator
 - Asegura que el servidor API esté ejecutándose: `npm run dev` desde `api-server/`
 - Verifica la configuración del firewall en el puerto 3000
 - Comprueba que el emulador de Android use `10.0.2.2` para localhost
-- Confirma que haya archivos de audio en el directorio `api-server/songs/`
 
 ### Errores de Compilación
 - Limpia la caché de NuGet: `dotnet nuget locals all --clear`
 - Elimina los directorios `bin/` y `obj/`
 - Restaura los paquetes: `dotnet restore`
 
-### Sin Canciones en la Aplicación
-- Verifica que existan archivos de audio (MP3, WAV, M4A) en `api-server/songs/`
-- Usa los scripts de utilidad para generar datos de prueba:
-  ```bash
-  cd api-server
-  npm install
-  node generate-test-audio.js
-  node generate-covers.js
-  ```
+### Sin estaciones de radio
+- Revisa que los endpoints de radio respondan: `curl http://localhost:3000/api/radios/random?limit=5`
+- Si estás en red corporativa/VPN, la API de radio-browser puede estar bloqueada; prueba otra conexión
 
 ## Mejoras Futuras
 
